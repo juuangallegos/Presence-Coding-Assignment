@@ -1,4 +1,4 @@
-import { LightningElement, wire, api } from 'lwc';
+import { LightningElement,track, wire, api } from 'lwc';
 import getContacts from '@salesforce/apex/ClsPaymentTriggerHandler.getContacts';
 import getPayments from '@salesforce/apex/ClsPaymentTriggerHandler.getPayments';
 import { refreshApex } from '@salesforce/apex';
@@ -23,15 +23,11 @@ const COLS = [
 export default class presenceCodingLWC extends LightningElement {
 
     @api recordId;
-     columns = COLS;
+    columns = COLS;
     draftValues = [];
 
     @wire(getContacts)
     contact;
-
-  
-
-    
 
     handleSaveContacts(event) {
 
@@ -52,10 +48,8 @@ export default class presenceCodingLWC extends LightningElement {
                     variant: 'success'
                 })
             );
-            // Display fresh data in the datatable
             return refreshApex(this.contact).then(() => {
 
-                // Clear all draft values in the datatable
                 this.draftValues = [];
 
             });

@@ -97,4 +97,10 @@ public class ClsPaymentTriggerHandler {
     public static List<Payment__c> getPayments(){
         return [SELECT Id, Payment_Date__c,Contact__r.FirstName, Contact__r.LastName FROM Payment__c];
     }
+
+    @AuraEnabled
+    public static Payment__c createPayment(Payment__c pa){
+      insert pa;
+      return pa;
+    }
 }
