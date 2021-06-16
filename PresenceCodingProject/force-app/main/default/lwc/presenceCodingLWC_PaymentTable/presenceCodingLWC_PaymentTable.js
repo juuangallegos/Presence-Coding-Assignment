@@ -2,7 +2,7 @@ import { LightningElement, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
 import { deleteRecord } from 'lightning/uiRecordApi';
-import getAccountList from '@salesforce/apex/ClsPaymentTriggerHandler.getPayments';
+import getPaymentList from '@salesforce/apex/ClsPaymentTriggerHandler.getPayments';
 
 
 export default class presenceCodingLWC_PaymentTable extends LightningElement {
@@ -13,10 +13,11 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
     /** Wired Apex result so it can be refreshed programmatically */
     wiredPaymentsResult;
 
-    @wire(getAccountList)
+    @wire(getPaymentList)
     wiredPayments(result) {
         this.wiredPaymentsResult = result;
         if (result.data) {
+            console.log('###result.data'+JSON.stringify(result.data));
             this.payments = result.data;
             this.error = undefined;
         } else if (result.error) {
