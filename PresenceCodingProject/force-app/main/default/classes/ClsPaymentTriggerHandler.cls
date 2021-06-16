@@ -18,7 +18,6 @@ public class ClsPaymentTriggerHandler {
     List<Project__c> projectList = new List<Project__c>();
     List<Contact> contactList = new List<Contact>();
     
-    
     public void OnAfterInsertPayments(List<Payment__c> newPayments) {
         for(Payment__c payment : newPayments){
             projectId.add(payment.Project__c);
@@ -26,21 +25,8 @@ public class ClsPaymentTriggerHandler {
         }
         projectList = getProjectInfo(projectId);
         contactList = getContactInfo(contactId);
-        
-        for(Project__c pr:projectList){
-            if(!projectList.isEmpty() && pr.Amount_Payment__c != null){
-                pr.Amount_Payment__c = pr.Amount_Payment__c + 1;
-            }            
-        }
-        for(Contact co: contactList){
-            if(!contactList.isEmpty() && co.Total_Amount_Payment__c != null){
-                co.Total_Amount_Payment__c = co.Total_Amount_Payment__c + 1;
-                co.Recent_Payment_Date__c = System.today();
-            }
-        }
-        update projectList;
-        update contactList; 
-        
+        setUpProjectInfo(projectList,false);
+        setUpContactInfo(contactList,newPayments[0].Payment_Date__c,false);
     }
     
     public void OnAfterUpdatePayments(List<Payment__c> newPayments) {        
@@ -51,46 +37,19 @@ public class ClsPaymentTriggerHandler {
         }
         projectList = getProjectInfo(projectId);
         contactList = getContactInfo(contactId);
-        
-        for(Project__c pr:projectList){
-            if(!projectList.isEmpty() && pr.Amount_Payment__c != null){
-                pr.Amount_Payment__c = pr.Amount_Payment__c + 1;
-            }            
-        }
-        for(Contact co: contactList){
-            if(!contactList.isEmpty() && co.Total_Amount_Payment__c != null){
-                co.Total_Amount_Payment__c = co.Total_Amount_Payment__c + 1;
-                co.Recent_Payment_Date__c = System.today();
-            }
-        }
-        update projectList;
-        update contactList; 
-        
+        setUpProjectInfo(projectList,false);
+        setUpContactInfo(contactList,newPayments[0].Payment_Date__c,false);
     }
     
     public void OnAfterDeletePayments(List<Payment__c> newPayments) {        
-        
         for(Payment__c payment : newPayments){
             projectId.add(payment.Project__c);
             contactId.add(payment.Contact__c);
         }
         projectList = getProjectInfo(projectId);
         contactList = getContactInfo(contactId);
-        
-        for(Project__c pr:projectList){
-            if(!projectList.isEmpty() && pr.Amount_Payment__c != null){
-                pr.Amount_Payment__c = pr.Amount_Payment__c - 1;
-            }            
-        }
-        for(Contact co: contactList){
-            if(!contactList.isEmpty() && co.Total_Amount_Payment__c != null){
-                co.Total_Amount_Payment__c = co.Total_Amount_Payment__c - 1;
-                co.Recent_Payment_Date__c = System.today();
-            }
-        }
-        update projectList;
-        update contactList; 
-        
+        setUpProjectInfo(projectList,true);
+        setUpContactInfo(contactList,newPayments[0].Payment_Date__c,true);
     }
     
     public List<Contact> getContactInfo(Set<Id> contactIds){
@@ -101,5 +60,41 @@ public class ClsPaymentTriggerHandler {
     public List<Project__c> getProjectInfo(Set<Id> projectIds){
         projectList = [SELECT Id,Amount_Payment__c FROM Project__c WHERE Id =:projectIds];
         return projectList;
+    }
+    public void setUpProjectInfo(List<Project__c> projectList,Boolean isDelete){
+        for(Project__c pr:projectList){
+            if(!projectList.isEmpty()){
+                if(pr.Amount_Payment__c != null && isDelete){
+                    pr.Amount_Payment__c = pr.Amount_Payment__c - 1;
+                }else{
+                    pr.Amount_Payment__c = pr.Amount_Payment__c + 1;
+                }
+            } 
+        }
+        update projectList;
+    }
+    
+    public void setUpContactInfo(List<Contact> contactList, Date paymentDate, Boolean isDelete){
+        for(Contact co: contactList){
+            if(!contactList.isEmpty()){
+                if(co.Total_Amount_Payment__c != null && isDelete){
+                    co.Total_Amount_Payment__c = co.Total_Amount_Payment__c - 1;
+                    co.Recent_Payment_Date__c = paymentDate;
+                }else{
+                    co.Total_Amount_Payment__c = co.Total_Amount_Payment__c + 1;
+                    co.Recent_Payment_Date__c = paymentDate;  
+                }  
+            } 
+        }
+        update contactList;
+    }
+    @AuraEnabled(cacheable=true)
+    public static List<Contact> getContacts(){
+        return [SELECT Id, FirstName,LastName,Total_Amount_Payment__c,Recent_Payment_Date__c FROM Contact WHERE Total_Amount_Payment__c >0];
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Payment__c> getPayments(){
+        return [SELECT Id, Payment_Date__c,Contact__r.FirstName, Contact__r.LastName FROM Payment__c];
     }
 }

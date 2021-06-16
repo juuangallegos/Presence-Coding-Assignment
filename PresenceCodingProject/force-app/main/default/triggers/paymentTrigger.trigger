@@ -13,8 +13,7 @@ Modification Log:
 trigger paymentTrigger on Payment__c (after insert,after update,after delete) {
     paymentTriggerHandler handler = new paymentTriggerHandler();
     
-   
-    
+      
     if(trigger.isInsert && trigger.isAfter){
         handler.onAfterInsert(Trigger.New);
     }

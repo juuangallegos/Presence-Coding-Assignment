@@ -3,6 +3,7 @@
     <types>
         <members>paymentTriggerHandler</members>
         <members>ClsPaymentTriggerHandler</members>
+        <members>ClsPaymentTriggerHandler_Test</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -33,7 +34,7 @@
         <members>*</members>
         <name>StaticResource</name>
     </types>-->
-    
-    
+
+
     <version>51.0</version>
 </Package>
