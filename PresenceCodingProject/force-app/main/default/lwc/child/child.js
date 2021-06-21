@@ -1,6 +1,5 @@
 import { LightningElement, wire, track ,api} from 'lwc';
 import getPaymentList from '@salesforce/apex/ClsPaymentTriggerHandler.getPayments';
-//import deleteRecord from '@salesforce/apex/ClsPaymentTriggerHandler.deletePayments';  
 import { refreshApex } from '@salesforce/apex';
 import { updateRecord } from 'lightning/uiRecordApi';
 import { deleteRecord } from 'lightning/uiRecordApi';
@@ -29,8 +28,6 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
     @track error;
     draftValues = [];
 
-    /** Wired Apex result so it can be refreshed programmatically */
-    
 
     @wire(getPaymentList)
     wiredPaymentsResult;  
@@ -54,6 +51,8 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
                 })
             );
             
+            const selectEvent=new CustomEvent('myscustomevent',{detail:name,bubbles:true});
+             this.dispatchEvent(selectEvent);
             return refreshApex(this.wiredPaymentsResult).then(() => {
 
                 this.draftValues = [];
@@ -93,28 +92,8 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
         const action = event.detail.action;
         const row = event.detail.row;
         const id = row.Id;
-        console.log('###action'+JSON.stringify(action));
-        console.log('###row'+JSON.stringify(row));
-        console.log('###id'+JSON.stringify(id));
-
-     /*   @wire (deleteRecord,{rowid:'$recordId'})
-        wireDeleteRecords({data,error}){
-            if(data){
-                setTimeout(() => {
-                    return refreshApex(this.wiredPaymentsResult);
-                }, 1800);
-                
-            }else{
-                this.error = error;
-            }
-        }
-        
-
-        })
-        
- }*/
-
-    deleteRecord(id)
+    
+        deleteRecord(id)
         .then(() => {
             this.dispatchEvent(
                 new ShowToastEvent({
@@ -123,21 +102,13 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
                     variant: 'success'
                 })
             );
-            // Navigate to a record home page after
-            // the record is deleted, such as to the
-            // contact home page
+          
             setTimeout(() => {
                 const selectEvent=new CustomEvent('myscustomevent',{detail:name,bubbles:true});
-        this.dispatchEvent(selectEvent);
+                this.dispatchEvent(selectEvent);
                 return refreshApex(this.wiredPaymentsResult);
             }, 1800);
-        /*    this[NavigationMixin.Navigate]({
-                type: 'standard__objectPage',
-                attributes: {
-                    objectApiName: 'Contact',
-                    actionName: 'home',
-                },
-            });*/
+     
         })
         .catch(error => {
             this.dispatchEvent(
@@ -149,12 +120,4 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
             );
         });
 }
-    
-
-   
-           
-    
-    
-
-
 }
