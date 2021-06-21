@@ -25,22 +25,19 @@ export default class presenceCodingLWC extends LightningElement {
         super();
         this.template.addEventListener('myscustomevent',this.handleCustomEvent.bind(this));
 
-    }
+    }//sfs
   
-    handleCustomEvent(event){
-        console.log('### the wvent works'+event.detail);
-        //refreshApex(this.colums);
-    }
+    
 
     @api recordId;
-    columns = COLS;
+    @track columns = COLS;
     draftValues = [];
 
     @wire(getContacts)
     contact;
 
     handleSaveContacts(event) {
-
+        console.log('###save contact')
         let fields = {}; 
         fields[ID_FIELD.fieldApiName] = event.detail.draftValues[0].Id;
         fields[FIRSTNAME_FIELD.fieldApiName] = event.detail.draftValues[0].FirstName;
@@ -74,5 +71,12 @@ export default class presenceCodingLWC extends LightningElement {
         });
     }
 
+    handleCustomEvent(event){
+        console.log('### the wvent works'+event.detail+ ' '+JSON.stringify(this.contact));
    
+        setTimeout(() => {
+            return refreshApex(this.contact);
+        },1000);
+    }
+    
 }

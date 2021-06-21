@@ -1,0 +1,38 @@
+
+<template>
+  
+     
+
+      
+    <lightning-card title="Payments" icon-name="custom:custom63">
+        <div class="slds-m-around_medium">
+            <template if:true={wiredPaymentsResult.data}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={wiredPaymentsResult.data}
+                    columns={columns}
+                    onsave={handleSavePayments}
+                    draft-values={draftValues}
+                    onrowaction={handleRowAction}
+                   >
+                    
+                </lightning-datatable>
+            </template>
+            <template if:true={wiredPaymentsResult.error}>
+            </template>
+        </div>
+    </lightning-card><br/>
+    
+    <lightning-card title="Create Payments" icon-name="standard:record">
+        <lightning-record-edit-form object-api-name="Payment__c" >
+           <lightning-input-field field-name="Payment_Date__c" required></lightning-input-field>
+           <lightning-input-field field-name="Amount__c" required></lightning-input-field>
+           <lightning-input-field field-name="Contact__c" required></lightning-input-field>
+           <lightning-input-field field-name="Project__c" required></lightning-input-field>
+            <lightning-button type="submit" variant="brand" label="Create Payment" onclick={refreshContactTable}></lightning-button>
+        </lightning-record-edit-form>
+     </lightning-card>
+     
+
+      
+</template>

@@ -88,6 +88,15 @@ public class ClsPaymentTriggerHandler {
         }
         update contactList;
     }
+
+    @AuraEnabled(cacheable=true)
+    public static void deletePayments(String paymentId){
+        List<Payment__c> paymentList = [SELECT Id,Payment_Date__c FROM Payment__c WHERE Id =: paymentId ];
+        if(!paymentList.isEmpty()){
+            delete paymentList;
+        }
+    }
+
     @AuraEnabled(cacheable=true)
     public static List<Contact> getContacts(){
         return [SELECT Id, FirstName,LastName,Total_Amount_Payment__c,Recent_Payment_Date__c FROM Contact WHERE Total_Amount_Payment__c >0];
@@ -95,7 +104,7 @@ public class ClsPaymentTriggerHandler {
 
     @AuraEnabled(cacheable=true)
     public static List<Payment__c> getPayments(){
-        return [SELECT Id, Payment_Date__c,Contact__r.FirstName, Contact__r.LastName FROM Payment__c];
+        return [SELECT Id, Payment_Date__c,Contact__r.FirstName, Contact__r.LastName,Amount__c FROM Payment__c];
     }
 
     @AuraEnabled

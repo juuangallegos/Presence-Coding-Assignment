@@ -27,8 +27,12 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
     }
 
     deletePayment(event) {
+        const name = 'test';
+        const selectEvent=new CustomEvent('myscustomevent',{detail:name,bubbles:true});
+        this.dispatchEvent(selectEvent);
         const recordId = event.target.dataset.recordid;
         deleteRecord(recordId)
+        
             .then(() => {
                 this.dispatchEvent(
                     new ShowToastEvent({
@@ -37,6 +41,7 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
                         variant: 'success'
                     })
                 );
+               
                 return refreshApex(this.wiredPaymentsResult);
             })
             .catch((error) => {
@@ -49,4 +54,7 @@ export default class presenceCodingLWC_PaymentTable extends LightningElement {
                 );
             });
     }
+    
+
+
 }
